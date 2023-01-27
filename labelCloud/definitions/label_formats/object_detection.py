@@ -7,3 +7,4 @@ class ObjectDetectionFormat(BaseLabelFormat):
     CENTROID_ABS = "centroid_abs"
     KITTI = "kitti"
     KITTI_UNTRANSFORMED = "kitti_untransformed"
+    LACONIC = "laconic"

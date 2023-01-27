@@ -2,14 +2,16 @@ import logging
 from pathlib import Path
 from typing import List, Optional
 
-from ..io.labels import BaseLabelFormat, CentroidFormat, KittiFormat, VerticesFormat
+from ..io.labels import BaseLabelFormat, CentroidFormat, KittiFormat, VerticesFormat, LaconicFormat
 from ..io.labels.config import LabelConfig
 from ..model import BBox
 from .config_manager import config
 
 
 def get_label_strategy(export_format: str, label_folder: Path) -> "BaseLabelFormat":
-    if export_format == "vertices":
+    if export_format == "laconic":
+        return LaconicFormat(label_folder, LabelManager.EXPORT_PRECISION)
+    elif export_format == "vertices":
         return VerticesFormat(label_folder, LabelManager.EXPORT_PRECISION)
     elif export_format == "centroid_rel":
         return CentroidFormat(

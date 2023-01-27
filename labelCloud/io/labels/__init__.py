@@ -6,3 +6,4 @@ from .base import (
 from .centroid import CentroidFormat
 from .kitti import KittiFormat
 from .vertices import VerticesFormat
+from .laconic import LaconicFormat
