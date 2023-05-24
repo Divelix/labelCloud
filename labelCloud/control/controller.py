@@ -73,6 +73,7 @@ class Controller:
                 "LABEL", "propagate_labels"
             ):
                 self.bbox_controller.set_bboxes(previous_bboxes)
+            self.bbox_controller.set_active_bbox(0)
         else:
             self.view.update_progress(len(self.pcd_manager.pcds))
             self.view.button_next_pcd.setEnabled(False)
@@ -83,6 +84,7 @@ class Controller:
             self.pcd_manager.get_prev_pcd()
             self.reset()
             self.bbox_controller.set_bboxes(self.pcd_manager.get_labels_from_file())
+            self.bbox_controller.set_active_bbox(0)
 
     def custom_pcd(self, custom: int) -> None:
         self.save()
@@ -253,9 +255,9 @@ class Controller:
             )
 
         # Reset point cloud pose to intial rotation and translation
-        elif (a0.key() == QtCore.Qt.Key_R) or (a0.key() == QtCore.Qt.Key_Home):
-            self.pcd_manager.reset_transformations()
-            logging.info("Reseted position to default.")
+        # elif (a0.key() == QtCore.Qt.Key_R) or (a0.key() == QtCore.Qt.Key_Home):
+        #     self.pcd_manager.reset_transformations()
+        #     logging.info("Reseted position to default.")
 
         elif a0.key() == QtCore.Qt.Key_Delete:  # Delete active bbox
             self.bbox_controller.delete_current_bbox()
@@ -273,15 +275,15 @@ class Controller:
                 logging.info("Resetted selected points!")
 
         # BBOX MANIPULATION
-        elif (a0.key() == QtCore.Qt.Key_Y) or (a0.key() == QtCore.Qt.Key_Comma):
+        elif (a0.key() == QtCore.Qt.Key_Q) or (a0.key() == QtCore.Qt.Key_Comma):
             # z rotate counterclockwise
             self.bbox_controller.rotate_around_z()
-        elif (a0.key() == QtCore.Qt.Key_X) or (a0.key() == QtCore.Qt.Key_Period):
+        elif (a0.key() == QtCore.Qt.Key_E) or (a0.key() == QtCore.Qt.Key_Period):
             # z rotate clockwise
             self.bbox_controller.rotate_around_z(clockwise=True)
-        elif a0.key() == QtCore.Qt.Key_C:
-            # y rotate counterclockwise
-            self.bbox_controller.rotate_around_y()
+        # elif a0.key() == QtCore.Qt.Key_C:
+        #     # y rotate counterclockwise
+        #     self.bbox_controller.rotate_around_y()
         elif a0.key() == QtCore.Qt.Key_V:
             # y rotate clockwise
             self.bbox_controller.rotate_around_y(clockwise=True)
@@ -291,24 +293,60 @@ class Controller:
         elif a0.key() == QtCore.Qt.Key_N:
             # x rotate clockwise
             self.bbox_controller.rotate_around_x(clockwise=True)
-        elif (a0.key() == QtCore.Qt.Key_W) or (a0.key() == QtCore.Qt.Key_Up):
+        elif (a0.key() == QtCore.Qt.Key_W):
             # move backward
             self.bbox_controller.translate_along_y()
-        elif (a0.key() == QtCore.Qt.Key_S) or (a0.key() == QtCore.Qt.Key_Down):
+        elif (a0.key() == QtCore.Qt.Key_S):
             # move forward
             self.bbox_controller.translate_along_y(forward=True)
-        elif (a0.key() == QtCore.Qt.Key_A) or (a0.key() == QtCore.Qt.Key_Left):
+        elif (a0.key() == QtCore.Qt.Key_A):
             # move left
             self.bbox_controller.translate_along_x(left=True)
-        elif (a0.key() == QtCore.Qt.Key_D) or (a0.key() == QtCore.Qt.Key_Right):
+        elif (a0.key() == QtCore.Qt.Key_D):
             # move right
             self.bbox_controller.translate_along_x()
-        elif (a0.key() == QtCore.Qt.Key_Q) or (a0.key() == QtCore.Qt.Key_PageUp):
+        elif (a0.key() == QtCore.Qt.Key_R) or (a0.key() == QtCore.Qt.Key_PageUp):
             # move up
             self.bbox_controller.translate_along_z()
-        elif (a0.key() == QtCore.Qt.Key_E) or (a0.key() == QtCore.Qt.Key_PageDown):
+        elif (a0.key() == QtCore.Qt.Key_F) or (a0.key() == QtCore.Qt.Key_PageDown):
             # move down
             self.bbox_controller.translate_along_z(down=True)
+        elif (a0.key() == QtCore.Qt.Key_Left) or (a0.key() == QtCore.Qt.Key_Z):
+            # load previous sample
+            self.prev_pcd()
+        elif (a0.key() == QtCore.Qt.Key_Right) or (a0.key() == QtCore.Qt.Key_X):
+            # load next sample
+            self.next_pcd()
+        elif a0.key() == QtCore.Qt.Key_Up:
+            self.bbox_controller.set_active_bbox(self.bbox_controller.active_bbox_id - 1)
+        elif a0.key() == QtCore.Qt.Key_Down:
+            self.bbox_controller.set_active_bbox(self.bbox_controller.active_bbox_id + 1)
+        elif a0.key() == QtCore.Qt.Key_1:
+            self.bbox_controller.set_active_bbox(0)
+        elif a0.key() == QtCore.Qt.Key_2:
+            self.bbox_controller.set_active_bbox(1)
+        elif a0.key() == QtCore.Qt.Key_3:
+            self.bbox_controller.set_active_bbox(2)
+        elif a0.key() == QtCore.Qt.Key_4:
+            self.bbox_controller.set_active_bbox(3)
+        elif a0.key() == QtCore.Qt.Key_5:
+            self.bbox_controller.set_active_bbox(4)
+        elif a0.key() == QtCore.Qt.Key_6:
+            self.bbox_controller.set_active_bbox(5)
+        elif a0.key() == QtCore.Qt.Key_7:
+            self.bbox_controller.set_active_bbox(6)
+        elif a0.key() == QtCore.Qt.Key_8:
+            self.bbox_controller.set_active_bbox(7)
+        elif a0.key() == QtCore.Qt.Key_9:
+            self.bbox_controller.set_active_bbox(8)
+        elif a0.key() == QtCore.Qt.Key_C:
+            current_class = self.bbox_controller.get_active_bbox().get_classname()
+            # print(LabelConfig().classes) 
+            print(current_class)
+            new_class = 'stairs' if current_class == 'human' else 'human' 
+            print(new_class)
+            self.bbox_controller.get_active_bbox().set_classname(new_class)
+            self.bbox_controller.update_all() # updates UI in SelectBox
 
     def key_release_event(self, a0: QtGui.QKeyEvent) -> None:
         """Triggers actions when the user releases a key."""
